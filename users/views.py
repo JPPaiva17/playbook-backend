@@ -6,9 +6,11 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
+    LoginSerializer,
     PasswordChangeSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
@@ -35,6 +37,48 @@ class RegisterView(APIView):
         )
 
 
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'user': {
+                    'id': user.pk,
+                    'email': user.email,
+                    'username': user.username,
+                },
+            }
+        )
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh')
+            if not refresh_token:
+                return Response(
+                    {'detail': 'Refresh token é obrigatório.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({'detail': 'Logout realizado com sucesso.'})
+        except TokenError:
+            return Response(
+                {'detail': 'Token inválido ou já expirado.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -58,8 +102,6 @@ class PasswordResetRequestView(APIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            # Em produção isso seria enviado por email.
-            # Por agora, imprime no console para simular.
             print('\n' + '=' * 60)
             print('SIMULAÇÃO DE EMAIL — Recuperação de senha')
             print(f'Para: {email}')
@@ -68,7 +110,7 @@ class PasswordResetRequestView(APIView):
             print('Use esses valores no endpoint /api/auth/password/reset/confirm/')
             print('=' * 60 + '\n')
         except User.DoesNotExist:
-            pass  # Não revelamos se o email existe ou não
+            pass
 
         return Response({'detail': 'Se esse email estiver cadastrado, você receberá as instruções.'})
 
