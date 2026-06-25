@@ -7,6 +7,17 @@ class Play(models.Model):
         PUBLIC = 'public', 'Público'
         PRIVATE = 'private', 'Privado'
 
+    class Map(models.TextChoices):
+        MIRAGE = 'mirage', 'Mirage'
+        INFERNO = 'inferno', 'Inferno'
+        DUST2 = 'dust2', 'Dust 2'
+        NUKE = 'nuke', 'Nuke'
+        OVERPASS = 'overpass', 'Overpass'
+        ANCIENT = 'ancient', 'Ancient'
+        ANUBIS = 'anubis', 'Anubis'
+        VERTIGO = 'vertigo', 'Vertigo'
+        TRAIN = 'train', 'Train'
+
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     content = models.TextField()
@@ -14,6 +25,11 @@ class Play(models.Model):
         max_length=10,
         choices=Visibility.choices,
         default=Visibility.PRIVATE,
+    )
+    map = models.CharField(
+        max_length=20,
+        choices=Map.choices,
+        blank=True,
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -23,10 +39,8 @@ class Play(models.Model):
 
     video_url = models.URLField(blank=True, null=True)
 
-    # Players
     players_required = models.PositiveSmallIntegerField(default=1)
 
-    # Granadas do CS
     smokes = models.PositiveSmallIntegerField(default=0, verbose_name='Smokes')
     flashbangs = models.PositiveSmallIntegerField(default=0, verbose_name='Flashbangs')
     he_grenades = models.PositiveSmallIntegerField(default=0, verbose_name='HE Grenades')

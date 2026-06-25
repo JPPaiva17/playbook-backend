@@ -1,9 +1,30 @@
 from rest_framework import filters, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from .models import Play
 from .permissions import IsAuthorOrReadOnly
 from .serializers import PlaySerializer
+
+
+def _apply_filters(qs, params):
+    """Aplica filtros de granadas, players e mapa ao queryset."""
+    if m := params.get('map'):
+        qs = qs.filter(map=m)
+    if p := params.get('players_required'):
+        qs = qs.filter(players_required=p)
+    if v := params.get('smokes'):
+        qs = qs.filter(smokes__gte=v)
+    if v := params.get('flashbangs'):
+        qs = qs.filter(flashbangs__gte=v)
+    if v := params.get('he_grenades'):
+        qs = qs.filter(he_grenades__gte=v)
+    if v := params.get('molotovs'):
+        qs = qs.filter(molotovs__gte=v)
+    if v := params.get('decoys'):
+        qs = qs.filter(decoys__gte=v)
+    return qs
 
 
 class PlayViewSet(viewsets.ModelViewSet):
@@ -15,25 +36,26 @@ class PlayViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_queryset(self):
-        user = self.request.user
-        qs = Play.objects.select_related('author')
+        """Apenas plays públicas."""
+        qs = Play.objects.select_related('author').filter(
+            visibility=Play.Visibility.PUBLIC
+        )
+        return _apply_filters(qs, self.request.query_params)
 
-        qs = qs.filter(visibility=Play.Visibility.PUBLIC) | qs.filter(author=user)
+    @action(detail=False, methods=['get'], url_path='my')
+    def my_plays(self, request):
+        """Todas as plays do usuário autenticado (públicas e privadas)."""
+        qs = Play.objects.select_related('author').filter(author=request.user)
+        qs = _apply_filters(qs, request.query_params)
 
-        params = self.request.query_params
-        if v := params.get('visibility'):
-            qs = qs.filter(visibility=v)
-        if p := params.get('players_required'):
-            qs = qs.filter(players_required=p)
-        if params.get('smokes'):
-            qs = qs.filter(smokes__gte=params['smokes'])
-        if params.get('flashbangs'):
-            qs = qs.filter(flashbangs__gte=params['flashbangs'])
-        if params.get('he_grenades'):
-            qs = qs.filter(he_grenades__gte=params['he_grenades'])
-        if params.get('molotovs'):
-            qs = qs.filter(molotovs__gte=params['molotovs'])
-        if params.get('decoys'):
-            qs = qs.filter(decoys__gte=params['decoys'])
+        # Respeita search e ordering do DRF
+        for backend in self.filter_backends:
+            qs = backend().filter_queryset(request, qs, self)
 
-        return qs.distinct()
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)

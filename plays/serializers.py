@@ -20,6 +20,7 @@ class PlaySerializer(serializers.ModelSerializer):
             'description',
             'content',
             'visibility',
+            'map',
             'video_url',
             'players_required',
             'smokes',
