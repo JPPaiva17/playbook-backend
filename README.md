@@ -2,7 +2,9 @@
 
 Trabalho da disciplina de Programação para Web (PUC-Rio, 2026/1).
 
-**Integrantes:** João Pedro, Breno
+**Integrantes:** 
+Breno Raisch - 2110039
+João Pedro Paiva - 211xxxx
 
 PlayBook é uma plataforma para jogadores de CS2 catalogarem e organizarem estratégias de jogo (execuções, defesas, anti-ecos, etc). O backend expõe uma API REST construída com Django + Django REST Framework, com autenticação via JWT e documentação Swagger.
 
@@ -91,23 +93,3 @@ Com o servidor rodando, acesse:
 3. Crie Plays em `/api/plays/` informando mapa, granadas necessárias, vídeo, etc.
 4. Agrupe Plays em um Playbook via `/api/playbooks/`, usando `plays/add` e `plays/remove` para gerenciar quais Plays pertencem a ele.
 5. Marque `visibility` como `public` para que outros usuários autenticados vejam suas Plays/Playbooks.
-
-## O que funcionou / o que não funcionou
-
-> ⚠️ Esta seção deve ser revisada e completada antes da entrega final, com base nos testes manuais e na suíte de testes automatizados.
-
-- [ ] CRUD de Plays
-- [ ] CRUD de Playbooks
-- [ ] Autenticação e gerência de senha
-- [ ] Regras de visibilidade (público/privado)
-- [ ] Swagger
-
-## Imagens
-
-> ⚠️ Adicionar pelo menos 3 capturas de tela da aplicação (ex: Swagger UI, exemplos de requisição/resposta) antes da entrega final.
-
-## Links
-
-- Repositório do frontend: _a definir_
-- Site do backend (produção): _a definir_
-- Site do frontend (produção): _a definir_
