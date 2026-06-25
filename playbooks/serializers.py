@@ -1,11 +1,14 @@
 from rest_framework import serializers
 
 from plays.models import Play
+from plays.serializers import PlaySerializer
 
 from .models import Playbook
 
 
 class PlaybookSerializer(serializers.ModelSerializer):
+    """Usado em listagem e escrita: plays como lista de IDs."""
+
     author = serializers.StringRelatedField(read_only=True)
     plays = serializers.PrimaryKeyRelatedField(many=True, queryset=Play.objects.all(), required=False)
 
@@ -35,3 +38,9 @@ class PlaybookSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
         return super().create(validated_data)
+
+
+class PlaybookDetailSerializer(PlaybookSerializer):
+    """Usado no detalhe: plays como objetos completos (read-only)."""
+
+    plays = PlaySerializer(many=True, read_only=True)
