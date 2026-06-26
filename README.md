@@ -43,6 +43,18 @@ docker run --rm -p 8000:8000 --env-file .env playbook-backend
 
 O container roda as migrations automaticamente antes de subir o servidor (Gunicorn) em `http://localhost:8000/`.
 
+### Persistindo o banco entre execuções
+
+Sem volume, o `db.sqlite3` vive só dentro do container e se perde quando ele é removido. Para persistir, monte um volume numa pasta (não no arquivo direto) e aponte `SQLITE_PATH` para dentro dela:
+
+```bash
+docker volume create playbook-db
+docker run --rm -p 8000:8000 --env-file .env \
+  -e SQLITE_PATH=/app/data/db.sqlite3 \
+  -v playbook-db:/app/data \
+  playbook-backend
+```
+
 ## Documentação da API (Swagger)
 
 Com o servidor rodando, acesse:
