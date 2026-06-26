@@ -18,6 +18,7 @@ from .serializers import (
     PasswordResetRequestSerializer,
     RegisterSerializer,
     UserSerializer,
+    UserUpdateSerializer,
 )
 
 User = get_user_model()
@@ -28,7 +29,15 @@ class MeView(APIView):
 
     def get(self, request):
         return Response(UserSerializer(request.user).data)
-      
+
+    @extend_schema(request=UserUpdateSerializer, responses=OpenApiTypes.OBJECT)
+    def patch(self, request):
+        serializer = UserUpdateSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(UserSerializer(request.user).data)
+
+
 class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
@@ -46,6 +55,7 @@ class RegisterView(APIView):
             {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
+                'user': UserSerializer(user).data,
             },
             status=status.HTTP_201_CREATED,
         )
@@ -64,11 +74,7 @@ class LoginView(APIView):
             {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user': {
-                    'id': user.pk,
-                    'email': user.email,
-                    'username': user.username,
-                },
+                'user': UserSerializer(user).data,
             }
         )
 
