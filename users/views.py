@@ -17,11 +17,18 @@ from .serializers import (
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
     RegisterSerializer,
+    UserSerializer,
 )
 
 User = get_user_model()
 
 
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(UserSerializer(request.user).data)
+      
 class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 

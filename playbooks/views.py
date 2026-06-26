@@ -7,7 +7,7 @@ from plays.models import Play
 
 from .models import Playbook
 from .permissions import IsAuthorOrReadOnly
-from .serializers import PlaybookSerializer
+from .serializers import PlaybookDetailSerializer, PlaybookSerializer
 
 
 class PlaybookViewSet(viewsets.ModelViewSet):
@@ -17,6 +17,11 @@ class PlaybookViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['created_at', 'updated_at', 'title']
     ordering = ['-created_at']
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return PlaybookDetailSerializer
+        return PlaybookSerializer
 
     def get_queryset(self):
         """Apenas playbooks públicos."""
