@@ -2,7 +2,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from rest_framework import status
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -26,11 +28,15 @@ class MeView(APIView):
 
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+      
+class RefreshTokenSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
 
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(request=RegisterSerializer, responses=OpenApiTypes.OBJECT)
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -48,6 +54,7 @@ class RegisterView(APIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(request=LoginSerializer, responses=OpenApiTypes.OBJECT)
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -69,6 +76,7 @@ class LoginView(APIView):
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=RefreshTokenSerializer, responses=OpenApiTypes.OBJECT)
     def post(self, request):
         try:
             refresh_token = request.data.get('refresh')
@@ -90,6 +98,7 @@ class LogoutView(APIView):
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=PasswordChangeSerializer, responses=OpenApiTypes.OBJECT)
     def post(self, request):
         serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -100,6 +109,7 @@ class PasswordChangeView(APIView):
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(request=PasswordResetRequestSerializer, responses=OpenApiTypes.OBJECT)
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -126,6 +136,7 @@ class PasswordResetRequestView(APIView):
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(request=PasswordResetConfirmSerializer, responses=OpenApiTypes.OBJECT)
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
