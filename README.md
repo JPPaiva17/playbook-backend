@@ -34,6 +34,15 @@ A API fica disponível em `http://127.0.0.1:8000/`.
 
 Copie `.env.example` para `.env` e ajuste se necessário (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`).
 
+## Rodando com Docker
+
+```bash
+docker build -t playbook-backend .
+docker run --rm -p 8000:8000 --env-file .env playbook-backend
+```
+
+O container roda as migrations automaticamente antes de subir o servidor (Gunicorn) em `http://localhost:8000/`.
+
 ## Documentação da API (Swagger)
 
 Com o servidor rodando, acesse:
