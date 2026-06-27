@@ -4,9 +4,34 @@ Trabalho da disciplina de Programação para Web (PUC-Rio, 2026/1).
 
 **Integrantes:** 
 Breno Raisch - 2110039
-João Pedro Paiva - 211xxxx
+João Pedro Paiva - 2110569
 
 PlayBook é uma plataforma para jogadores de CS2 catalogarem e organizarem estratégias de jogo (execuções, defesas, anti-ecos, etc). O backend expõe uma API REST construída com Django + Django REST Framework, com autenticação via JWT e documentação Swagger.
+
+## Telas
+
+### Homepage
+*Página inicial com hero section, cards demonstrativos e seção de features.*
+<img width="1814" height="1454" alt="image" src="https://github.com/user-attachments/assets/bde5ddb6-b67b-4812-bcaf-d85f32f75f49" />
+
+
+### Explorar
+*Tela de exploração com toggle entre Plays e Playbooks, busca em tempo real e filtros por mapa e granadas.*
+<img width="1958" height="922" alt="image" src="https://github.com/user-attachments/assets/eab735a1-9ea8-41cd-b81b-5feddc0b91f2" />
+
+### Minhas Plays
+*Dashboard de plays com criação via modal, preview de thumbnail do YouTube e filtros.*
+<img width="1884" height="738" alt="image" src="https://github.com/user-attachments/assets/5753543e-c78d-4538-a6e2-1379d3c8b69a" />
+
+### Modal de criação de Play
+*Modal com duas colunas: thumbnail do vídeo à esquerda e abas Descrição / Settings à direita.*
+<img width="1354" height="912" alt="image" src="https://github.com/user-attachments/assets/96db0deb-8025-47cf-b1d8-73b56b9a3cf5" />
+
+### Meus Playbooks
+*Dashboard de playbooks com multiselect de plays e modal estilo playlist.*
+<img width="1944" height="646" alt="image" src="https://github.com/user-attachments/assets/d26b59d1-be83-4518-8cd7-fd20b7b28ce0" />
+
+---
 
 ## Stack
 
